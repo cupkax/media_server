@@ -1,0 +1,100 @@
+---
+services:
+  jellyfin:
+    image: cr.hotio.dev/hotio/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/jellyfin-config:/config
+      - ${ROOT_DIR}/data/media:/data/media
+    ports:
+      - 8096:8096
+    restart: unless-stopped
+
+#
+# SERVARR
+#
+  radarr:
+    image: cr.hotio.dev/hotio/radarr:latest
+    container_name: radarr
+    logging:
+     driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/radarr:/config
+      - ${ROOT_DIR}:/data
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+
+  sonarr:
+    image: cr.hotio.dev/hotio/sonarr:latest
+    container_name: sonarr
+    logging:
+     driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/sonarr:/config
+      - ${ROOT_DIR}:/data
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+
+  readarr:
+    image: cr.hotio.dev/hotio/readarr:nightly
+    container_name: readarr
+    logging:
+     driver: json-file   
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/readarr:/config
+      - ${ROOT_DIR}:/data
+    ports:
+      - 8787:8787
+    restart: unless-stopped
+
+  bazarr:
+    image: cr.hotio.dev/hotio/bazarr:latest
+    container_name: bazarr
+    logging:
+      driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/bazarr:/config
+      - ${ROOT_DIR}/media:/data/media
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+
+  prowlarr:
+    image: cr.hotio.dev/hotio/prowlarr:nightly
+    container_name: prowlarr
+    logging:
+     driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/prowlarr:/config
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  sabnzbd:
+    image: cr.hotio.dev/hotio/sabnzbd:latest
+    container_name: sabnzbd
+    hostname: 172.17.0.1
+    logging:
+      driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/sabnzbd:/config
+      - ${ROOT_DIR}/usenet:/data/usenet:rw
+    ports:
+      - 8080:8080
+    restart: unless-stopped
