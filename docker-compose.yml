@@ -1,13 +1,27 @@
 ---
 services:
+#  organizr:
+#    image: organizr/organizr:latest
+#    container_name: organizr
+#    hostname: 172.17.0.1
+#    logging:
+#     driver: json-file
+#    environment:
+#      - TZ=${TIMEZONE}    
+#    volumes:
+#      - ${ROOT_DIR}/docker/appdata/organizr:/config
+#    ports:
+#      - 9983:80
+#    restart: unless-stopped
+
   jellyfin:
     image: cr.hotio.dev/hotio/jellyfin:latest
     container_name: jellyfin
     environment:
       - TZ=${TIMEZONE}
     volumes:
-      - ${ROOT_DIR}/docker/jellyfin-config:/config
-      - ${ROOT_DIR}/data/media:/data/media
+      - ${ROOT_DIR}/docker/appdata/jellyfin:/config
+      - ${ROOT_DIR}/media:/data/media
     ports:
       - 8096:8096
     restart: unless-stopped
