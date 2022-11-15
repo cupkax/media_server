@@ -30,7 +30,7 @@ services:
 # SERVARR
 #
   radarr:
-    image: cr.hotio.dev/hotio/radarr:latest
+    image: ghcr.io/hotio/radarr:nightly
     container_name: radarr
     logging:
      driver: json-file
@@ -44,7 +44,7 @@ services:
     restart: unless-stopped
 
   sonarr:
-    image: cr.hotio.dev/hotio/sonarr:latest
+    image: ghcr.io/hotio/sonarr:nightly
     container_name: sonarr
     logging:
      driver: json-file
@@ -57,8 +57,22 @@ services:
       - 8989:8989
     restart: unless-stopped
 
+  sonarr-anime:
+    image: ghcr.io/hotio/sonarr:nightly
+    container_name: sonarr-anime
+    logging:
+     driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/sonarr-anime:/config
+      - ${ROOT_DIR}:/data
+    ports:
+      - 8990:8989
+    restart: unless-stopped    
+
   readarr:
-    image: cr.hotio.dev/hotio/readarr:nightly
+    image: ghcr.io/hotio/readarr:nightly
     container_name: readarr
     logging:
      driver: json-file   
@@ -72,7 +86,7 @@ services:
     restart: unless-stopped
 
   bazarr:
-    image: cr.hotio.dev/hotio/bazarr:latest
+    image: ghcr.io/hotio/bazarr:nightly
     container_name: bazarr
     logging:
       driver: json-file
@@ -86,7 +100,7 @@ services:
     restart: unless-stopped
 
   prowlarr:
-    image: cr.hotio.dev/hotio/prowlarr:nightly
+    image: ghcr.io/hotio/prowlarr:nightly
     container_name: prowlarr
     logging:
      driver: json-file
@@ -99,7 +113,7 @@ services:
     restart: unless-stopped
 
   sabnzbd:
-    image: cr.hotio.dev/hotio/sabnzbd:latest
+    image: ghcr.io/hotio/sabnzbd:nightly
     container_name: sabnzbd
     hostname: 172.17.0.1
     logging:
