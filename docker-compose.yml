@@ -1,18 +1,15 @@
 ---
 services:
-#  organizr:
-#    image: organizr/organizr:latest
-#    container_name: organizr
-#    hostname: 172.17.0.1
-#    logging:
-#     driver: json-file
-#    environment:
-#      - TZ=${TIMEZONE}    
-#    volumes:
-#      - ${ROOT_DIR}/docker/appdata/organizr:/config
-#    ports:
-#      - 9983:80
-#    restart: unless-stopped
+  homer:
+    image: b4bz/homer
+    container_name: homer
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/homer:/www/assets
+    ports:
+      - 8090:8080
+    environment:
+      - INIT_ASSETS=1 # default
+    restart: unless-stopped
 
   jellyfin:
     image: cr.hotio.dev/hotio/jellyfin:latest
@@ -112,6 +109,7 @@ services:
       - 9696:9696
     restart: unless-stopped
 
+# Download Clients
   sabnzbd:
     image: ghcr.io/hotio/sabnzbd:nightly
     container_name: sabnzbd
