@@ -1,14 +1,14 @@
 ---
 services:
-  homer:
-    image: b4bz/homer
-    container_name: homer
-    volumes:
-      - ${ROOT_DIR}/docker/appdata/homer:/www/assets
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    container_name: homepage
     ports:
-      - 8090:8080
-    environment:
-      - INIT_ASSETS=1 # default
+      - 3000:3000
+    volumes:
+      - ${ROOT_DIR}:/mnt/data
+      - ${ROOT_DIR}/docker/appdata/homepage:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
     restart: unless-stopped
 
   jellyfin:
