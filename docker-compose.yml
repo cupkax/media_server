@@ -27,7 +27,7 @@ services:
 # SERVARR
 #
   radarr:
-    image: ghcr.io/hotio/radarr:nightly
+    image: ghcr.io/hotio/radarr:testing
     container_name: radarr
     logging:
      driver: json-file
@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
 
   sonarr:
-    image: ghcr.io/hotio/sonarr:nightly
+    image: ghcr.io/hotio/sonarr:v4
     container_name: sonarr
     logging:
      driver: json-file
@@ -55,7 +55,7 @@ services:
     restart: unless-stopped
 
   sonarr-anime:
-    image: ghcr.io/hotio/sonarr:nightly
+    image: ghcr.io/hotio/sonarr:v4
     container_name: sonarr-anime
     logging:
      driver: json-file
@@ -97,7 +97,7 @@ services:
     restart: unless-stopped
 
   prowlarr:
-    image: ghcr.io/hotio/prowlarr:nightly
+    image: ghcr.io/hotio/prowlarr:testing
     container_name: prowlarr
     logging:
      driver: json-file
@@ -111,7 +111,7 @@ services:
 
 # Download Clients
   sabnzbd:
-    image: ghcr.io/hotio/sabnzbd:nightly
+    image: ghcr.io/hotio/sabnzbd:testing
     container_name: sabnzbd
     hostname: 172.17.0.1
     logging:
