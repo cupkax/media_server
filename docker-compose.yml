@@ -122,5 +122,23 @@ services:
       - ${ROOT_DIR}/docker/appdata/sabnzbd:/config
       - ${ROOT_DIR}/usenet:/data/usenet:rw
     ports:
+      - 8081:8080
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    #hostname: 172.17.0.1
+    logging:
+      driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+      - WEBUI_PORT=8080
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/qbittorrent:/config
+      - ${ROOT_DIR}/torrents:/data/torrents:rw
+    ports:
+      - 6882:6881
+      - 6882:6881/udp
       - 8080:8080
     restart: unless-stopped
