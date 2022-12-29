@@ -4,3 +4,5 @@ media/
 soulseek/
 torrents/
 usenet/
+.env
+cloudflared.txt

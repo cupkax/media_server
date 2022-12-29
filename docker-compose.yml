@@ -1,6 +1,29 @@
----
+version: "3.9"
+networks:
+  medianetwrk:
+    name: medianetwrk
+    driver: bridge
+    external: true
+
+# Keys common to some of the core services that we always to automatically restart on failure
+x-common-keys-core:
+  &common-keys-core
+  networks:
+    - medianetwrk
+  security_opt:
+    - no-new-privileges:true
+  restart: unless-stopped
+
 services:
+  cloudflared:
+    <<: *common-keys-core
+    image: cloudflare/cloudflared
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel run --token {TUN_TOKEN}
+
   homepage:
+    <<: *common-keys-core
     image: ghcr.io/benphelps/homepage:latest
     container_name: homepage
     ports:
@@ -12,25 +35,42 @@ services:
     restart: unless-stopped
 
   jellyfin:
-    image: cr.hotio.dev/hotio/jellyfin:latest
+    <<: *common-keys-core
+    image: ghcr.io/hotio/jellyfin:latest
     container_name: jellyfin
+    logging:
+      driver: json-file
     environment:
       - TZ=${TIMEZONE}
     volumes:
       - ${ROOT_DIR}/docker/appdata/jellyfin:/config
-      - ${ROOT_DIR}/media:/data/media
+      - ${ROOT_DIR}:/data
     ports:
       - 8096:8096
     restart: unless-stopped
 
-#
-# SERVARR
-#
+  #
+  # SERVARR
+  #
+  notifiarr:
+    <<: *common-keys-core
+    container_name: notifiarr
+    hostname: notifiarr
+    image: golift/notifiarr
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/notifiarr:/config
+      - /var/run/utmp:/var/run/utmp
+      - /etc/machine-id:/etc/machine-id
+    ports:
+      - 5454:5454
+    restart: unless-stopped
+
   radarr:
+    <<: *common-keys-core
     image: ghcr.io/hotio/radarr:testing
     container_name: radarr
     logging:
-     driver: json-file
+      driver: json-file
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -41,10 +81,11 @@ services:
     restart: unless-stopped
 
   sonarr:
+    <<: *common-keys-core
     image: ghcr.io/hotio/sonarr:v4
     container_name: sonarr
     logging:
-     driver: json-file
+      driver: json-file
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -55,10 +96,11 @@ services:
     restart: unless-stopped
 
   sonarr-anime:
+    <<: *common-keys-core
     image: ghcr.io/hotio/sonarr:v4
     container_name: sonarr-anime
     logging:
-     driver: json-file
+      driver: json-file
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -66,13 +108,27 @@ services:
       - ${ROOT_DIR}:/data
     ports:
       - 8990:8989
-    restart: unless-stopped    
+    restart: unless-stopped
+  lidarr:
+    <<: *common-keys-core
+    container_name: lidarr
+    image: ghcr.io/hotio/lidarr:nightly
+    logging:
+      driver: json-file
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ${ROOT_DIR}/docker/appdata/lidarr:/config
+      - ${ROOT_DIR}:/data
+    ports:
+      - 8686:8686
 
   readarr:
+    <<: *common-keys-core
     image: ghcr.io/hotio/readarr:nightly
     container_name: readarr
     logging:
-     driver: json-file   
+      driver: json-file
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -82,25 +138,12 @@ services:
       - 8787:8787
     restart: unless-stopped
 
-  bazarr:
-    image: ghcr.io/hotio/bazarr:nightly
-    container_name: bazarr
-    logging:
-      driver: json-file
-    environment:
-      - TZ=${TIMEZONE}
-    volumes:
-      - ${ROOT_DIR}/docker/appdata/bazarr:/config
-      - ${ROOT_DIR}/media:/data/media
-    ports:
-      - 6767:6767
-    restart: unless-stopped
-
   prowlarr:
+    <<: *common-keys-core
     image: ghcr.io/hotio/prowlarr:testing
     container_name: prowlarr
     logging:
-     driver: json-file
+      driver: json-file
     environment:
       - TZ=${TIMEZONE}
     volumes:
@@ -109,8 +152,9 @@ services:
       - 9696:9696
     restart: unless-stopped
 
-# Download Clients
+  # Download Clients
   sabnzbd:
+    <<: *common-keys-core
     image: ghcr.io/hotio/sabnzbd:testing
     container_name: sabnzbd
     hostname: 172.17.0.1
@@ -125,20 +169,23 @@ services:
       - 8081:8080
     restart: unless-stopped
 
-  qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    container_name: qbittorrent
-    #hostname: 172.17.0.1
-    logging:
-      driver: json-file
-    environment:
-      - TZ=${TIMEZONE}
-      - WEBUI_PORT=8080
-    volumes:
-      - ${ROOT_DIR}/docker/appdata/qbittorrent:/config
-      - ${ROOT_DIR}/torrents:/data/torrents:rw
-    ports:
-      - 6882:6881
-      - 6882:6881/udp
-      - 8080:8080
-    restart: unless-stopped
+# Temp disabled due to permission issues
+
+##  qbittorrent:
+##    image: lscr.io/linuxserver/qbittorrent:latest
+##    container_name: qbittorrent
+##    #hostname: 172.17.0.1
+##    logging:
+##      driver: json-file
+##    environment:
+##      - TZ=${TIMEZONE}
+##      - WEBUI_PORT=8080
+##    volumes:
+##      - ${ROOT_DIR}/docker/appdata/qbittorrent:/config
+##      - ${ROOT_DIR}/torrents:/data/torrents:rw
+##    ports:
+##      - 6882:6881
+##      - 6882:6881/udp
+##      - 8080:8080
+##    restart: unless-stopped
+##
